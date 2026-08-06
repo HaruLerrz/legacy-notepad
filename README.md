@@ -14,6 +14,8 @@ Legacy Notepad 是一個使用 C++17 與 Win32 API 製作的輕量 Windows 記�
 - 修正 `Redo` 指令原本誤觸發 `Undo` 的問題。
 - 調整部分本地化後容易被裁切的對話框版面。
 - 補齊部分選單與對話框的正體中文翻譯。
+- 調整 `↑` / `↓` 在單行文件與文件首尾的邊界導覽行為。
+- 修正尋找功能的選取位置錯亂問題，改用 RichEdit 原生搜尋定位。
 - 保留原專案版本號；若未來本 fork 發布獨立版本，會另外使用 fork 專用 release tag 標示。
 
 ## 原專案簡介
@@ -31,7 +33,7 @@ A lightweight, 25x fast, Windows notepad alternative built with C++17 and Win32 
 
 - **多語言介面**：支援英文、日文、正體中文，並可在執行期間切換。
 - **多種文字編碼**：支援 UTF-8、UTF-8 BOM、UTF-16 LE/BE、ANSI，以及換行格式選擇。
-- **基本文字編輯**：自動換行、字型選擇、縮放、時間／日期插入、尋找、取代、到指定行。
+- **基本文字編輯**：自動換行、字型選擇、縮放、時間／日期插入、尋找、取代、到指定行與鍵盤導覽。
 - **背景圖片**：支援圖片背景、平鋪、延展、符合、填滿、定位與不透明度控制。此功能仍有已知限制。
 - **最上層顯示**：可將視窗固定在其他視窗上方。
 - **列印**：支援列印與版面設定對話框。
@@ -129,7 +131,7 @@ CMakeLists.txt
 | `src/core/types.h`                 | Enums, structs, app constants |
 | `src/core/globals.*`               | Shared handles/state definitions |
 | `src/lang/*`                       | English, Japanese, Traditional Chinese UI strings |
-| `src/modules/editor.*`             | RichEdit setup, word wrap, zoom |
+| `src/modules/editor.*`             | RichEdit setup, word wrap, zoom, keyboard handling |
 | `src/modules/file.*`               | Load/save, encoding and line endings |
 | `src/modules/ui.*`                 | Title/status updates, layout sizing |
 | `src/modules/theme.*`              | Dark mode title/menu/status, theming |
