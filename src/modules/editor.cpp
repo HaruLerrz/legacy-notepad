@@ -283,9 +283,7 @@ LRESULT CALLBACK EditorSubclassProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM l
         }
         break;
     case WM_KEYDOWN:
-        // Handle vertical arrow boundary navigation like common text editors.
-        // If the caret is already on the first visual line, Up moves to the start.
-        // If the caret is already on the last visual line, Down moves to the end.
+        // Handle vertical arrow boundary navigation explicitly.
         if ((wParam == VK_UP || wParam == VK_DOWN) &&
             !(GetKeyState(VK_CONTROL) & 0x8000) &&
             !(GetKeyState(VK_SHIFT) & 0x8000) &&
@@ -294,12 +292,30 @@ LRESULT CALLBACK EditorSubclassProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM l
             DWORD start = 0, end = 0;
             SendMessageW(hwnd, EM_GETSEL, reinterpret_cast<WPARAM>(&start), reinterpret_cast<LPARAM>(&end));
 
-            if (start == end)
+            int lineCount = static_cast<int>(SendMessageW(hwnd, EM_GETLINECOUNT, 0, 0));
+            if (lineCount < 1)
+                lineCount = 1;
+
+            if (start != end)
+            {
+                int startLine = static_cast<int>(SendMessageW(hwnd, EM_EXLINEFROMCHAR, 0, start));
+                int endLine = static_cast<int>(SendMessageW(hwnd, EM_EXLINEFROMCHAR, 0, end));
+
+                if (wParam == VK_UP && startLine <= 0)
+                {
+                    SendMessageW(hwnd, EM_SETSEL, start, start);
+                    return 0;
+                }
+
+                if (wParam == VK_DOWN && endLine >= lineCount - 1)
+                {
+                    SendMessageW(hwnd, EM_SETSEL, end, end);
+                    return 0;
+                }
+            }
+            else
             {
                 int line = static_cast<int>(SendMessageW(hwnd, EM_EXLINEFROMCHAR, 0, start));
-                int lineCount = static_cast<int>(SendMessageW(hwnd, EM_GETLINECOUNT, 0, 0));
-                if (lineCount < 1)
-                    lineCount = 1;
 
                 if (wParam == VK_UP && line <= 0)
                 {
