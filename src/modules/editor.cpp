@@ -255,6 +255,9 @@ LRESULT CALLBACK EditorSubclassProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM l
         break;
     case WM_MOUSEWHEEL:
     {
+        if (LOWORD(wParam) & MK_CONTROL)
+            break;
+
         int delta = GET_WHEEL_DELTA_WPARAM(wParam);
 
         if (LOWORD(wParam) & MK_SHIFT)
